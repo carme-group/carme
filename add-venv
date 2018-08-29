@@ -1,0 +1,10 @@
+#!/bin/sh
+VIRTUALENV_HOME=/opt/carme/virtualenvs
+NCOLONY=/opt/carme/ncolony/
+ENV=$VIRTUALENV_HOME/$1
+MAIN_ENV=/opt/carme/jupyter
+/opt/carme/pyenv/versions/3.7.0/bin/python3.7 -m venv $ENV
+$ENV/bin/python -m pip install ipykernel
+$ENV/bin/python -m ipykernel install --name $1-env --display-name "$1" --prefix $ENV
+$MAIN_ENV/bin/jupyter  kernelspec install $ENV/share/jupyter/kernels/$1-env/
+$MAIN_ENV/bin/python -m ncolony ctl --messages $NCOLONY/messages/ --config $NCOLONY/config/ restart jupyter
