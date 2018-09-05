@@ -26,7 +26,7 @@ RUN $PYENV_ROOT/bin/pyenv global 3.7.0
 RUN $($PYENV_ROOT/bin/pyenv which python3) -m venv \
      /opt/carme/jupyter
 
-RUN /opt/carme/jupyter/bin/pip install jupyterlab ncolony
+RUN /opt/carme/jupyter/bin/pip install jupyterlab ncolony xonsh
 
 RUN mkdir -p $NCOLONY_ROOT/messages $NCOLONY_ROOT/config
 
