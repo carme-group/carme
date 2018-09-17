@@ -1,0 +1,8 @@
+version: '3'
+services:
+  carme:
+    build:
+      context: .
+      dockerfile: debian.dockerfile
+    ports:
+     - "8888:8888"
