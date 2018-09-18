@@ -35,6 +35,7 @@ RUN /opt/carme/jupyter/bin/python -m ncolony ctl \
     --config $NCOLONY_ROOT/config \
     add jupyter --cmd /opt/carme/jupyter/bin/jupyter \
     --arg lab --arg='--ip=0.0.0.0' --arg=--allow-root
+    --env-inherit HOME
 
 RUN echo '#!/bin/sh' > /opt/carme/entrypoint.sh
 RUN echo 'exec /opt/carme/jupyter/bin/python -m twisted \
@@ -57,7 +58,8 @@ FROM debian:stretch
 ENV VIRTUALENV_HOME=/opt/carme/virtualenvs \
     PYENV_ROOT=/opt/carme/pyenv \
     NCOLONY_ROOT=/opt/carme/ncolony \
-    NVM_DIR=/opt/pybay/webaz/nvm
+    NVM_DIR=/opt/carme/webaz/nvm \
+    HOME=/opt/carme
 
 COPY --from=0 /opt/carme /opt/carme/
 
