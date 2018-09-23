@@ -34,7 +34,7 @@ RUN /opt/carme/jupyter/bin/python -m ncolony ctl \
     --messages $NCOLONY_ROOT/messages \
     --config $NCOLONY_ROOT/config \
     add jupyter --cmd /opt/carme/jupyter/bin/jupyter \
-    --arg lab --arg='--ip=0.0.0.0' --arg=--allow-root
+    --arg lab --arg='--ip=0.0.0.0' --arg=--allow-root \
     --env-inherit HOME
 
 RUN echo '#!/bin/sh' > /opt/carme/entrypoint.sh
