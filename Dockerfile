@@ -14,7 +14,7 @@ RUN mkdir -p $NCOLONY_ROOT/config $NCOLONY_ROOT/messages /opt/carme/src/
 
 RUN echo "c.NotebookApp.token = ''" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py 
 RUN echo "c.NotebookApp.password = ''" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py 
-RUN echo "c.NotebookApp.notebook_dir = '/opt/carme/src'" >> /opt/valetudo/venvs/jupyter/etc/jupyter/config.py 
+RUN echo "c.NotebookApp.notebook_dir = '/opt/carme/src'" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py 
 
 RUN /opt/carme/venvs/ncolony/bin/python -m ncolony ctl \
     --messages $NCOLONY_ROOT/messages \
@@ -22,6 +22,7 @@ RUN /opt/carme/venvs/ncolony/bin/python -m ncolony ctl \
     add jupyter --cmd /opt/carme/venvs/jupyter/bin/jupyter \
     --arg lab --arg=--allow-root \
     --arg=--config --arg /opt/carme/venvs/jupyter/etc/jupyter/config.py \
+    --arg=--ip --arg "0.0.0.0" \
     --env-inherit HOME
 
 COPY Caddyfile /opt/carme/caddy/
@@ -42,7 +43,7 @@ ENTRYPOINT ["/opt/carme/venvs/ncolony/bin/python", \
 
 
 #FROM python:3.9
-#COPY --from=builder /opt/carme /opt/valetudo
+#COPY --from=builder /opt/carme /opt/carme
 #ENTRYPOINT ["python", "-m", "twisted", "ncolony", \
 #                            "--messages", "/opt/carme/ncolony/messages",
 #                            "--conf", "/opt/carme/ncolony/config"]
