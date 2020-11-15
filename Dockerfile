@@ -6,6 +6,9 @@ RUN python3.9 -m venv /opt/carme/venvs/jupyter
 RUN python3.9 -m venv /opt/carme/venvs/ncolony
 RUN /opt/carme/venvs/jupyter/bin/python -m pip install jupyter pycus
 RUN /opt/carme/venvs/ncolony/bin/python -m pip install ncolony
+RUN apt update && apt install -y npm
+RUN /opt/carme/venvs/jupyter/bin/jupyter nbextension enable --py widgetsnbextension --sys-prefix
+RUN /opt/carme/venvs/jupyter/bin/jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
 RUN mkdir /opt/carme/caddy
 RUN cd /opt/carme/caddy && \
