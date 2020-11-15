@@ -8,8 +8,10 @@ RUN /opt/carme/venvs/jupyter/bin/python -m pip install jupyter pycus
 RUN /opt/carme/venvs/ncolony/bin/python -m pip install ncolony
 
 RUN mkdir /opt/carme/caddy
-RUN cd /opt/carme/caddy && curl -OL https://github.com/caddyserver/caddy/releases/download/v2.2.1/caddy_2.2.1_linux_amd64.tar.gz && tar xzf caddy_2.2.1_linux_amd64.tar.gz
-
+RUN cd /opt/carme/caddy && \
+    curl -OL https://github.com/caddyserver/caddy/releases/download/v2.2.1/caddy_2.2.1_linux_amd64.tar.gz \
+    && tar xzf caddy_2.2.1_linux_amd64.tar.gz \
+    && rm caddy_2.2.1_linux_amd64.tar.gz
 RUN mkdir -p $NCOLONY_ROOT/config $NCOLONY_ROOT/messages /opt/carme/src/
 
 RUN echo "c.NotebookApp.token = ''" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py 
@@ -36,14 +38,10 @@ RUN /opt/carme/venvs/ncolony/bin/python -m ncolony ctl \
     --env-inherit STAGING \
     --env-inherit HOME
 
+
+FROM python:3.9
+COPY --from=builder /opt/carme /opt/carme
 ENTRYPOINT ["/opt/carme/venvs/ncolony/bin/python", \
             "-m", "twisted", "ncolony", \
             "--messages", "/opt/carme/ncolony/messages", \
             "--conf", "/opt/carme/ncolony/config"]
-
-
-#FROM python:3.9
-#COPY --from=builder /opt/carme /opt/carme
-#ENTRYPOINT ["python", "-m", "twisted", "ncolony", \
-#                            "--messages", "/opt/carme/ncolony/messages",
-#                            "--conf", "/opt/carme/ncolony/config"]
