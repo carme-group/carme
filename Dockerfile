@@ -15,20 +15,23 @@ RUN cd /opt/carme/caddy && \
     curl -OL https://github.com/caddyserver/caddy/releases/download/v2.2.1/caddy_2.2.1_linux_amd64.tar.gz \
     && tar xzf caddy_2.2.1_linux_amd64.tar.gz \
     && rm caddy_2.2.1_linux_amd64.tar.gz
-RUN mkdir -p $NCOLONY_ROOT/config $NCOLONY_ROOT/messages /opt/carme/src/
+RUN mkdir -p $NCOLONY_ROOT/config $NCOLONY_ROOT/messages
 
 RUN echo "c.NotebookApp.token = ''" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py 
 RUN echo "c.NotebookApp.password = ''" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py 
-RUN echo "c.NotebookApp.notebook_dir = '/opt/carme/src'" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py 
+RUN echo "c.NotebookApp.notebook_dir = '/opt/carme/homedir/src'" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py 
 
+RUN mkdir -p /opt/carme/homedir/venvs /opt/carme/homedir/src
+RUN useradd --uid 1000 --home-dir /opt/carme/homedir/ --shell /bin/bash jupyter 
+RUN chown -R jupyter /opt/carme/homedir
 RUN /opt/carme/venvs/ncolony/bin/python -m ncolony ctl \
     --messages $NCOLONY_ROOT/messages \
     --config $NCOLONY_ROOT/config \
     add jupyter --cmd /opt/carme/venvs/jupyter/bin/jupyter \
-    --arg lab --arg=--allow-root \
+    --arg lab \
     --arg=--config --arg /opt/carme/venvs/jupyter/etc/jupyter/config.py \
-    --arg=--ip --arg "0.0.0.0" \
-    --env-inherit HOME
+    --uid=1000 \
+    --env HOME=/opt/carme/homedir
 
 COPY Caddyfile /opt/carme/caddy/
 RUN /opt/carme/venvs/ncolony/bin/python -m ncolony ctl \
@@ -44,6 +47,8 @@ RUN /opt/carme/venvs/ncolony/bin/python -m ncolony ctl \
 
 FROM python:3.9
 COPY --from=builder /opt/carme /opt/carme
+RUN useradd --uid 1000 --home-dir /opt/carme/homedir/ --shell /bin/bash jupyter 
+ENV WORKON_HOME=/opt/carme/homedir/venvs
 ENTRYPOINT ["/opt/carme/venvs/ncolony/bin/python", \
             "-m", "twisted", "ncolony", \
             "--messages", "/opt/carme/ncolony/messages", \
