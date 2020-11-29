@@ -4,7 +4,7 @@ ENV NCOLONY_ROOT=/opt/carme/ncolony
 
 RUN python3.9 -m venv /opt/carme/venvs/jupyter
 RUN python3.9 -m venv /opt/carme/venvs/ncolony
-RUN /opt/carme/venvs/jupyter/bin/python -m pip install jupyter pycus
+RUN /opt/carme/venvs/jupyter/bin/python -m pip install jupyter pycus>=20.11.0
 RUN /opt/carme/venvs/ncolony/bin/python -m pip install ncolony
 RUN apt update && apt install -y npm
 RUN /opt/carme/venvs/jupyter/bin/jupyter nbextension enable --py widgetsnbextension --sys-prefix
@@ -31,7 +31,8 @@ RUN /opt/carme/venvs/ncolony/bin/python -m ncolony ctl \
     --arg lab \
     --arg=--config --arg /opt/carme/venvs/jupyter/etc/jupyter/config.py \
     --uid=1000 \
-    --env HOME=/opt/carme/homedir
+    --env HOME=/opt/carme/homedir \
+    --env WORKON_HOME=/opt/carme/homedir/venvs
 
 COPY Caddyfile /opt/carme/caddy/
 RUN /opt/carme/venvs/ncolony/bin/python -m ncolony ctl \
@@ -48,7 +49,6 @@ RUN /opt/carme/venvs/ncolony/bin/python -m ncolony ctl \
 FROM python:3.9
 COPY --from=builder /opt/carme /opt/carme
 RUN useradd --uid 1000 --home-dir /opt/carme/homedir/ --shell /bin/bash jupyter 
-ENV WORKON_HOME=/opt/carme/homedir/venvs
 ENTRYPOINT ["/opt/carme/venvs/ncolony/bin/python", \
             "-m", "twisted", "ncolony", \
             "--messages", "/opt/carme/ncolony/messages", \
