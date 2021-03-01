@@ -20,6 +20,7 @@ RUN mkdir -p $NCOLONY_ROOT/config $NCOLONY_ROOT/messages
 RUN echo "c.NotebookApp.token = ''" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py
 RUN echo "c.NotebookApp.password = ''" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py
 RUN echo "c.NotebookApp.notebook_dir = '/opt/carme/homedir/src'" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py
+RUN echo "c.NotebookApp.allow_remote_access = True" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py
 
 RUN mkdir -p /opt/carme/homedir/venvs /opt/carme/homedir/src
 RUN useradd --uid 1000 --home-dir /opt/carme/homedir/ --shell /bin/bash jupyter
@@ -49,7 +50,9 @@ RUN /opt/carme/venvs/ncolony/bin/python -m ncolony ctl \
 
 FROM python:3.9
 COPY --from=builder /opt/carme /opt/carme
-RUN useradd --uid 1000 --home-dir /opt/carme/homedir/ --shell /bin/bash jupyter
+RUN useradd --uid 1000 --home-dir /opt/carme/homedir/ --shell /bin/bash jupyter \
+    && apt-get update \
+    && apt-get install -y texlive-latex-recommended texlive-latex-extra pandoc
 ENTRYPOINT ["/opt/carme/venvs/ncolony/bin/python", \
             "-m", "twisted", "ncolony", \
             "--messages", "/opt/carme/ncolony/messages", \
