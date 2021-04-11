@@ -6,7 +6,8 @@ RUN python3.9 -m venv /opt/carme/venvs/jupyter
 RUN python3.9 -m venv /opt/carme/venvs/ncolony
 RUN /opt/carme/venvs/jupyter/bin/python -m pip install jupyter pycus>=20.11.0
 RUN /opt/carme/venvs/ncolony/bin/python -m pip install ncolony
-RUN apt update && apt install -y npm
+RUN curl -fsSL https://deb.nodesource.com/setup_12.x | bash -
+RUN apt-get install -y nodejs
 RUN /opt/carme/venvs/jupyter/bin/jupyter nbextension enable --py widgetsnbextension --sys-prefix
 RUN /opt/carme/venvs/jupyter/bin/jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
@@ -52,7 +53,11 @@ FROM python:3.9
 COPY --from=builder /opt/carme /opt/carme
 RUN useradd --uid 1000 --home-dir /opt/carme/homedir/ --shell /bin/bash jupyter \
     && apt-get update \
-    && apt-get install -y texlive-latex-recommended texlive-latex-extra pandoc
+    && apt-get install -y texlive-latex-recommended texlive-latex-extra \
+                          texlive-xetex \
+                          poppler-utils \
+                          pandoc
+
 ENTRYPOINT ["/opt/carme/venvs/ncolony/bin/python", \
             "-m", "twisted", "ncolony", \
             "--messages", "/opt/carme/ncolony/messages", \
