@@ -4,12 +4,8 @@ ENV NCOLONY_ROOT=/opt/carme/ncolony
 
 RUN python3.9 -m venv /opt/carme/venvs/jupyter
 RUN python3.9 -m venv /opt/carme/venvs/ncolony
-RUN /opt/carme/venvs/jupyter/bin/python -m pip install jupyter pycus>=20.11.0
-RUN /opt/carme/venvs/ncolony/bin/python -m pip install ncolony
 RUN curl -fsSL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
-RUN /opt/carme/venvs/jupyter/bin/jupyter nbextension enable --py widgetsnbextension --sys-prefix
-RUN /opt/carme/venvs/jupyter/bin/jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
 RUN mkdir /opt/carme/caddy
 RUN cd /opt/carme/caddy && \
@@ -17,6 +13,12 @@ RUN cd /opt/carme/caddy && \
     && tar xzf caddy_2.2.1_linux_amd64.tar.gz \
     && rm caddy_2.2.1_linux_amd64.tar.gz
 RUN mkdir -p $NCOLONY_ROOT/config $NCOLONY_ROOT/messages
+
+RUN /opt/carme/venvs/jupyter/bin/python -m pip install pycus>=20.11.0
+RUN /opt/carme/venvs/jupyter/bin/python -m pip install --upgrade jupyterlab
+#RUN /opt/carme/venvs/jupyter/bin/jupyter nbextension enable --py widgetsnbextension --sys-prefix
+RUN /opt/carme/venvs/jupyter/bin/jupyter labextension install @jupyter-widgets/jupyterlab-manager
+RUN /opt/carme/venvs/ncolony/bin/python -m pip install ncolony
 
 RUN echo "c.NotebookApp.token = ''" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py
 RUN echo "c.NotebookApp.password = ''" >> /opt/carme/venvs/jupyter/etc/jupyter/config.py
